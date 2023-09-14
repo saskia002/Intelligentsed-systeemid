@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mäng</title>
+
+    <script>
+
+        let mangupikkus = 7;
+        let algseis = "1X";
+        let seis = algseis;
+        let lubatudKaigud = [1, 2];
+
+        function leiaAlamseisud(seis) {
+            let mangija = seis.substring(seis.lenght - 1);
+            let koht = parseInt(seis.substring(1, seis.lenght - 1));
+
+            let vastane = (mangija == "X") ? "N" : "X";
+
+            return lubatudKaigud.map((kaik) => kaik + koht)
+                .filter((koht) => koht <= mangupikkus)
+                .map((koht) => koht + vastane);
+        }
+
+        function seisuString(seis) {
+            let kriipsud = new Array(mangupikkus).fill("-");
+            let mangija = seis.substring(seis.lenght - 1);
+            let koht = parseInt(seis.substring(1, seis.lenght - 1));
+
+            kriipsud[koht - 1] = mangija;
+            return kriipsud.join(" ");
+
+        }
+
+        function kuvaSeis() {
+            hetkekiht.innerText = seisuString(seis);
+            seisud.innerText = leiaAlamseisud(seis);
+            seisuKiht.innerHTML = leiaAlamseisud(seis)
+                .map((alamseis) => seisuString(alamseis) 
+                + ` <input type='button' value='vali' onclick='valiSeis("${alamseis}")' /> `)
+                .join("<br> \n")
+        }
+
+        function valiSeis(uusSeis) {
+            seis = uusSeis;
+            kuvaSeis();
+        }
+
+    </script>
+
+
+</head>
+<body onload="kuvaSeis()">
+    <h3>
+        <div id="hetkekiht"></div>
+    </h3>
+    <hr>
+    <div style="display: flex; justify-content: start; align-items: center; gap: 0.25rem;">
+        <p>Võimalikud seisud: </p>
+        <div id="seisud"></div>
+    </div>
+    <small>
+        <div id="seisuKiht"></div>
+    </small>
+
+
+
+</body>
+</html>

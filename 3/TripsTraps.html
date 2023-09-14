@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>mäng</title>
+
+        <script>
+            let mangupikkus = 9;
+            let symbol = "X";
+            let seis = new Array(10).fill(".", 0, 9).fill(symbol, 9, 10);
+            let alamseisud = [];
+
+            function leiaLubatudKaigud() {
+                let i = 0;
+                seis.forEach((el) => { if (el == ".") { i++; } });
+                return i;
+            }
+
+            function leiaAlamseisud() {
+                let mangija = seis[9];
+                let vastane = (mangija == "X") ? "O" : "X";
+                let vastused = [];
+
+                // let vomalused = leiaLubatudKaigud();
+                for(let i=0; i<9; i++) {
+                    let tempSeis = [...seis]; // JSON.parse(JSON.stringify(foo)) <-- deep copy
+                    if (tempSeis[i] == ".") {
+                        tempSeis[i] = mangija;
+                        tempSeis[9] = vastane;
+                        vastused.push(tempSeis);
+                    }
+                }
+                    
+                alamseisud = vastused;
+                return vastused;
+            }
+
+            function seisuString(seis) {
+                let string = [];
+                for (let i = 0; i < 9; i += 3) {
+                    string.push(seis.slice(i, i + 3).join(' '));
+                }
+                return string.join("<br />") + "<br />";
+            }
+
+            function kuvaSeis() {
+                hetkeMangija.innerHTML = seis[9];
+                hetkekiht.innerHTML = seisuString(seis);
+                seisuKiht.innerHTML = leiaAlamseisud(seis)
+                    .map((alamseis, index) => 
+                        seisuString(alamseis) + ` 
+                        <input 
+                            type='button' value='vali' onclick='valiSeis(${index})' 
+                            style="margin-right: 2rem;"
+                        /> 
+                        `
+                    )
+                    .join("<br> \n");
+            }
+
+            function valiSeis(index) {
+                seis = alamseisud[index];
+                kuvaSeis();
+            }
+        </script>
+
+    </head>
+
+    <body onload="kuvaSeis()">
+        <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+            <h3 style="display: flex; column-gap: 0.3rem; margin: 0;">Hetke mängija:  <div id="hetkeMangija"></div> </h3>
+            <h2>
+                <div id="hetkekiht"></div>
+            </h2>
+        </div>
+
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <div style="width: 60%;">
+                <h3>Võimalikud seisud: </h3>
+                <h3>
+                    <div id="seisuKiht" 
+                        style="display: flex; justify-content: start; align-items: end; gap: 0.8rem; flex-wrap: wrap;"> 
+                    </div>
+                </h3>
+            </div>
+        </div>
+    </body>
+</html>
