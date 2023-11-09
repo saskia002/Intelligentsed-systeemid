@@ -1,0 +1,79 @@
+kass(miisu).
+kass(liisu).
+
+koer(muki).
+koer(muri).
+koer(liisu).
+
+koduloom(X):-
+    kass(X); koer(X).
+
+%varv(must).
+%varv(valge).
+
+%piir(A, B):-
+%    varv(A), varv(B), A\=B.
+
+varv(sinine).
+varv(must).
+varv(valge).
+
+piir(A, B):-
+    varv(A), varv(B), 
+    A\=B.
+
+%piir(Valgamaa, Võrumaa),
+%piir(Valgamaa, Tartumaa),
+%piir(Põlvamaa, Tartumaa),
+%piir(Võrumaa, Põlvamaa),
+%piir(Valgamaa, Viljandimaa),
+%piir(Viljandimaa, Tartumaa),
+%piir(Tarumaa, Jõgevamaa),
+%piir(Viljandimaa, Jõgevamaa).
+
+
+laps(toomas, jaagup).
+laps(paula, jaagup).
+laps(jaagup, pille).
+laps(pille, alex).
+laps(pille, vitali).
+laps(viivi, alex).
+
+mees(jaagup).
+mees(toomas).
+mees(alex).
+naine(viivi).
+naine(pille).
+naine(paula).
+
+% laps(X, Lapsevanem), laps(Y, Lapsevanem), naine(Y), naine(X), X\=Y.
+
+% Kuva kõik vanavanemad
+% laps(X, Z), laps(Z, Y), laps(Y, J).
+
+ode(A, B):-
+    laps(A, X), laps(B, X), naine(A), A\=B.
+
+% ode(X, _). kuvab kõik õed
+
+vanavanem(A, B):- %juhul kui
+    laps(B, X), laps(X, A).
+
+% vanavanem(X, _). kui ei taha teada lapsi
+% vanavanem(X, Y). kui lapsed ja olulised
+
+% kes on kelle vanatädi
+vanaode(A, B):- %juhul kui
+    ode(A, X), vanavanem(X, B).
+% vanaode(X, Y).
+
+
+
+
+
+
+
+
+
+
+
