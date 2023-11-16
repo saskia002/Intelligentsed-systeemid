@@ -1,0 +1,75 @@
+% ÜL 1
+lemmik(piret, kass, miisu).
+lemmik(mati, koer, pontu).
+lemmik(mati, kass, tiisu).
+lemmik(piret, papagoi, polyneesia).
+
+leiaLemmik(X, Y, Z):-
+    lemmik(X, Y, Z).
+%Pireti lemmikloomad (koos nimedega): 	leiaLemmik(piret, Y, X).
+%kõik kassiomanikud: 					leiaLemmik(X, kass, _).
+%kõikide koerade nimed: 				leiaLemmik(_, koer, X).
+%papagoi omaniku nime: 					leiaLemmik(X, papagoi, _).
+%(kõik erinevad loomad)					findall(Loom, lemmik(_, Loom, _), V).
+%										findall(Loom, lemmik(_, Loom, _), V), list_to_set(V, S).
+%											- https://www.swi-prolog.org/pldoc/man?predicate=distinct/1
+
+
+% ÜL 2
+auto(vanaisa, volga, valge).
+auto(ema, volvo, hall).
+auto(isa, bmw, must).
+auto(õde, bmw, hall).
+auto(vanaema, vw, punane).
+
+%Kõik üht värvi autod (nt punased): 	auto(X, Y, hall).
+%Kõik üht marki autod ja nende omaniku:
+%Kõik erinevad värvid:
+%Kõik erinevad automargid:
+
+
+% ÜL 3
+tund(füüsika).
+tund(matemaatika).
+tund(ajalugu).
+tund(venekeel).
+tund(humanitaar).
+tund(inglisekeel).
+
+tunnid(X):-
+    plaan = [_, _], member(X, plaan), tund(X),
+    writeln(plaan), false.
+
+%leia tunniplaan: tunnid. / tunnid(X).
+
+% katkine:
+%length(L, 3), 
+%tund(X), tund(Y), tund(Z),
+%member(Z, L), member(X, L), member(Y, L), 
+%X \= Y, Y = Z, Z \= X,
+%nth0(MKoht, L, matemaatika),
+%MKoht = 0
+%.
+
+length(L, 8), 
+nth0(MKoht, L, matemaatika),
+nth0(FKoht, L, füüsika),
+nth0(M2Koht, L, matemaatika),
+nth0(H1Koht, L, humanitaar),
+nth0(H2Koht, L, humanitaar),
+nth0(AKoht, L, ajalugu),
+nth0(IKKoht, L, inglisekeel),
+nth0(VKKoht, L, venekeel),
+MKoht \= M2Koht,
+FKoht is MKoht + 1,
+MKoht is IKKoht + 1,
+H1Koht \= H2Koht,
+AKoht is IKKoht + 4,
+VKKoht is AKoht + 2,
+IKKoht is MKoht - 1,
+(M2Koht is MKoht - 1; M2Koht is FKoht + 1),
+(H2Koht is H1Koht - 1; H2Koht is AKoht + 1)
+.
+
+
+
