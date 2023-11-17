@@ -1,0 +1,79 @@
+% ÜL 4
+%Elasid kord 3 sõpra, nende nimed olid Ants, Jüri ja Mati. Ants elas punases majas. 
+%Jüri armastas mängida korvpalli. Sinises majas elaval sõbral oli kana. 
+%Koeraomanik käis jalpallitrennis. Rohelises majas peeti kanaarilinde. 
+%Kes neist sõpradest tennist mängib?
+%Vihje: koosta andmestik ning kasuta sobilikku päringut.
+arvuta1(X):-
+    length(L, 3),
+    	member(isik(ants, punane, _, _), L),
+    	member(isik(jüri, _, korvpall, _), L),
+    	member(isik(mati, _, _, _), L),
+    	member(isik(_, sinine, _, kana), L),
+    	member(isik(_, _, jalgpall, koer) , L),
+    	member(isik(X, _, tennis, _) , L),
+    	member(isik(_, roheline, _, kanaarilind), L).
+
+% arvuta1(X).
+
+%%%% GRAMMATIKA HARJUTUSED:
+
+%%
+% ÜL tunnist: grammaitka
+
+isikunimi --> eesnimi, perekonnanimi.
+
+eesnimi --> [juku].
+eesnimi --> [mari].
+perekonnanimi --> [tamm].
+perekonnanimi --> [kask].
+
+% võimalikud nimed grammatikas: phrase(isikunimi, V).
+% phrase(isikunimi, [mari, X])., phrase(isikunimi, [mari, _]).
+
+%%
+% keerukam grammatika:
+
+% fraas sisaldab, s1 ei lõppe ära siin
+s1 --> [a], s1.
+s1 --> [b], s1.
+% fraas lõppeb
+s1 --> [a].
+s1 --> [b].
+
+%length(V, 2), phrase(s1, V).
+
+
+%%
+% keermukam grammatika 2:
+% ({S}, {1}, {S -> 1S1|1}, S)
+
+% 1. reeglid
+s --> []. % [] <- terminal midagi? :D
+s --> [1], s, [1].
+s --> [1].
+
+% phrase(s, [1,1,1]).
+% phrase(s, [1,_,_]).
+
+
+%%
+% keermukam grammatika 3 (palindroom):
+s3 --> [a], g, [a].
+s3 --> [b], g, [b].
+g --> [a].
+g --> [b].
+
+% phrase(s3, V).
+% V=[_, _, _], phrase(s3, V).
+%	-V piirab array pikkust
+
+% eelmine oli max 3 palidnroom
+% see on piiramatu peaaegu
+s4 --> [a], s4, [a].
+s4 --> [b], s4, [b].
+s4 --> [a].
+s4 --> [b].
+s4 --> []. % ei lähe millekski
+
+% V=[_, _, _, _, _], phrase(s4, V).
