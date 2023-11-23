@@ -1,0 +1,43 @@
+%Alice kohtas metsas Lõvi ja Ükssarve. On teada, et Lõvi valetab esmaspäeval, teisipäeval ja
+%kolmapäeval ning räägib tõtt ülejäänud nädalapäevadel. Ükssarv valetab nel-
+%japäeval, reedel ja laupäeval ning räägib tõtt ülejäänud päevadel. Alice päris
+%loomadelt, kas nad eile rääkisid tõtt või valetasid. Mõlemad loomad väitsid, et
+%olid eile valetanud. Alice suutis vastuste põhjal otsustada, mis nädalapäevaga
+%on tegemist. Mis nädalapäeval Alice neid küsitles?
+
+eile(esmaspäev, pühapäev).
+eile(tesipäev, esmaspäev).
+eile(kolmapäev, tesipäev).
+eile(neljapäev, kolmapäev).
+eile(reede, neljapäev).
+eile(laupäev, reede).
+eile(pühapäev, laupäev).
+
+lõvivaletab(esmaspäev).
+lõvivaletab(tesipäev).
+lõvivaletab(kolmapäev).
+
+ükssarvvaletab(neljapäev).
+ükssarvvaletab(reede).
+ükssarvvaletab(laupäev).
+
+lõvitõde(X):-
+    \+lõvivaletab(X).
+
+ükssarvtõde(X):-
+    \+ükssarvvaletab(X).
+
+lõvi(X):-
+    eile(X, Y), lõvitõde(X), lõvivaletab(Y).
+lõvi(X):-
+    eile(X, Y), lõvitõde(Y), lõvivaletab(X).
+
+ükssarv(X):-
+    eile(X, Y), ükssarvtõde(X), ükssarvvaletab(Y).
+ükssarv(X):-
+    eile(X, Y), ükssarvtõde(Y), ükssarvvaletab(X).
+
+lahendaVale(X):-
+    lõvi(X), ükssarv(X).
+
+%%
