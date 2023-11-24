@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Kaart</title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" />
+		<style>
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				padding: 0;
+				margin: 0;
+			}
+			img {
+				border: 0;
+			}
+			#kaardikiht {
+				width: 90%;
+				height: 90%;
+			}
+		</style>
+		<script>
+			let kaart;
+			//kaart.on("click", function (e) {
+			//	var coord = e.latlng;
+			//	var lat = coord.lat;
+			//	var lng = coord.lng;
+			//	console.log("You clicked the map at latitude: " + lat + " and longitude: " + lng);
+			//});
+			let kohad = {
+				Valga: L.latLng(57.7775, 26.0475),
+
+				// Tartu kaudu
+				Tartu: L.latLng(58.3806, 26.7253),
+				Rõngu: L.latLng(58.14053963174364, 26.254011491267754),
+				Kärevere_Rist: L.latLng(58.430083971236776, 26.48447326899108),
+				Adavere: L.latLng(58.70945873054904, 25.895846236738866),
+				Puurmani: L.latLng(58.5677562197934, 26.289807475386603),
+				Tallinn_Tartu_Põltsamaa_Rist: L.latLng(58.67187015431693, 25.931420559584417),
+				Imavere_rist: L.latLng(58.74588991680312, 25.76955933965559),
+
+				// Viljandi kaudu
+				Viljandi: L.latLng(58.3639, 25.59),
+				Tõrva: L.latLng(58.00266589665972, 25.923060810805957),
+				Karksi_Nuia: L.latLng(58.1031, 25.5619),
+				Helme: L.latLng(58.01748781434914, 25.877714391789468), // 58°01'00.3"N 25°52'40.8"E
+				Kärsna: L.latLng(58.1425482405169, 25.803873629644688),
+
+				Võhma: L.latLng(58.62979718032025, 25.572819549765356),
+				Mudiste: L.latLng(58.50620107844766, 25.587893289740983),
+
+				// Võrstjärve kõrvalt
+				Võisiku: L.latLng(58.623969101597055, 25.91901245799909),
+				Kolga_Jaani: L.latLng(58.54035449563861, 25.956156387158405),
+				Leie_Rist: L.latLng(58.419511020848695, 26.034257587970483),
+				Rannu_Jõesuu_sild: L.latLng(58.38563031398255, 26.135650598496156),
+				Taru_Viljandi_Sangla_Rist: L.latLng(58.33139033284941, 26.187721482859356),
+				Kaarlijärve: L.latLng(58.28016301255388, 26.175737658336395),
+				Ervu: L.latLng(58.21187862160945, 26.219675290237877),
+
+				Paide_Tartu_Tallinn_Rist: L.latLng(58.918708989332686, 25.621648869525135),
+				Tallinn: L.latLng(59.437, 24.7535),
+			};
+
+			var seosed = {
+				Tallinn: ["Paide_Tartu_Tallinn_Rist"],
+				Rõngu: ["Valga", "Tartu", "Ervu"],
+				Valga: ["Tõrva", "Rõngu"],
+				Tõrva: ["Valga", "Helme"],
+				Helme: ["Tõrva", "Karksi_Nuia", "Kärsna"],
+				Karksi_Nuia: ["Helme", "Viljandi"],
+				Kärsna: ["Helme", "Viljandi"],
+				Viljandi: ["Karksi_Nuia", "Kärsna", "Mudiste"],
+				Mudiste: ["Viljandi", "Võhma"],
+				Võhma: ["Mudiste", "Imavere_rist"],
+				Imavere_rist: ["Võhma", "Adavere", "Paide_Tartu_Tallinn_Rist"],
+				Paide_Tartu_Tallinn_Rist: ["Imavere_rist", "Tallinn"],
+				Adavere: ["Imavere_rist", "Tallinn_Tartu_Põltsamaa_Rist"],
+				Puurmani: ["Tallinn_Tartu_Põltsamaa_Rist", "Kärevere_Rist"],
+				Kärevere_Rist: ["Puurmani", "Tartu"],
+				Tartu: ["Kärevere_Rist", "Rõngu"],
+				Tallinn_Tartu_Põltsamaa_Rist: ["Võisiku", "Adavere"],
+				Võisiku: ["Tallinn_Tartu_Põltsamaa_Rist", "Kolga_Jaani"],
+				Kolga_Jaani: ["Võisiku", "Leie_Rist"],
+				Leie_Rist: ["Kolga_Jaani", "Rannu_Jõesuu_sild"],
+				Rannu_Jõesuu_sild: ["Leie_Rist", "Taru_Viljandi_Sangla_Rist"],
+				Taru_Viljandi_Sangla_Rist: ["Rannu_Jõesuu_sild", "Kaarlijärve"],
+				Kaarlijärve: ["Taru_Viljandi_Sangla_Rist", "Ervu"],
+				Ervu: ["Kaarlijärve", "Rõngu"],
+			};
+
+			function algus() {
+				kaart = L.map("kaardikiht").setView([58.7, 25.59], 8);
+				new L.TileLayer("https://tiles.maaamet.ee/tm/tms/1.0.0/hybriid@GMC/{z}/{x}/{y}.png&ASUTUS=TLU&ERIALA=DIGIHUMANITAARIA", {
+					attribution: "Map: <a  href='http://www.maaamet.ee/'>Maa-amet</a>",
+					tms: true,
+				}).addTo(kaart);
+				for (let koht in kohad) {
+					markerid[koht] = L.circleMarker(kohad[koht]);
+					markerid[koht].nimetus = koht;
+					markerid[koht].addTo(kaart);
+					markerid[koht].on("click", markeriVajutus);
+					markerid[koht].on("mouseover", hiirSisse);
+				}
+				for (let koht in seosed) {
+					for (let sihtkoht of seosed[koht]) {
+						console.log(koht, sihtkoht);
+						L.polyline([kohad[koht], kohad[sihtkoht]]).addTo(kaart);
+					}
+				}
+			}
+
+			function hiirSisse(marker) {
+				teabekiht.innerText = marker.target.nimetus;
+			}
+
+			let mituMarkeritVajutatud = 0;
+			let leitud, uuritud, kohaandmed;
+			let markerid = {};
+			let alguskoht, loppkoht;
+			function markeriVajutus(marker) {
+				mituMarkeritVajutatud++;
+				marker.target.setStyle({ color: "red" });
+
+				if (mituMarkeritVajutatud === 1) {
+					alguskoht = marker.target.nimetus;
+					pealkiri.innerText = "Vali lõppkoht";
+				}
+
+				if (mituMarkeritVajutatud === 2) {
+					loppkoht = marker.target.nimetus;
+					pealkiri.innerText = "Leian lühima tee";
+					kohaandmed = [];
+
+					for (let koht in kohad) {
+						kohaandmed[koht] = { nimetus: koht, kaugus: Infinity, tagasi: "?", kylastatud: false };
+					}
+
+					kohaandmed[alguskoht].kaugus = 0;
+					kohaandmed[alguskoht].tagasi = ".";
+					kohaandmed[alguskoht].kylastatud = true;
+
+					setTimeout(uuri, 255);
+				}
+			}
+
+			function uuri() {
+				if (kohaandmed[loppkoht].kylastatud === false) {
+					for (let koht of kohaandmed) {
+						if (koht.kylastatud === false && !uuritud.includes(koht)) {
+							markerid[koht].setStyle({ color: "black" });
+							kohaandmed[koht].kylastatud = true;
+							kohaandmed[koht].tagasi = uuritav;
+							kohaandmed[koht].kaugus = kohad[koht].distanceTo(kohad[uuritav]);
+						}
+					}
+
+					setTimeout(uuri, 255);
+				} else {
+					// Jõudsin lõppu, näitan teed
+					let v = "";
+					let koht = loppkoht;
+					v += koht;
+					let kokku = 0;
+
+					while (kohaandmed[koht].tagasi !== null) {
+						v += " " + kohaandmed[koht].tagasi + " " + kohaandmed[koht].kaugus;
+						kokku += kohaandmed[koht].kaugus;
+						koht = kohaandmed[koht].tagasi;
+					}
+
+					v += " kokku " + (kokku / 1000).toFixed(1) + " km.";
+					teabekiht.innerText = v;
+				}
+			}
+		</script>
+	</head>
+	<body onload="algus()">
+		<h4 id="pealkiri">Vali alguskoht</h4>
+		<div id="sisu"></div>
+		<div id="kaardikiht"></div>
+		<div id="teabekiht"></div>
+	</body>
+</html>
