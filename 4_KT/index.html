@@ -20,8 +20,11 @@
 				height: 90%;
 			}
 		</style>
+		<script src="graaf.js"></script>
 		<script>
 			let kaart;
+			let markerid = {};
+			let graaf = new Graaf();
 			//kaart.on("click", function (e) {
 			//	var coord = e.latlng;
 			//	var lat = coord.lat;
@@ -80,7 +83,7 @@
 				Puurmani: ["Tallinn_Tartu_Põltsamaa_Rist", "Kärevere_Rist"],
 				Kärevere_Rist: ["Puurmani", "Tartu"],
 				Tartu: ["Kärevere_Rist", "Rõngu"],
-				Tallinn_Tartu_Põltsamaa_Rist: ["Võisiku", "Adavere"],
+				Tallinn_Tartu_Põltsamaa_Rist: ["Võisiku", "Adavere", "Puurmani"],
 				Võisiku: ["Tallinn_Tartu_Põltsamaa_Rist", "Kolga_Jaani"],
 				Kolga_Jaani: ["Võisiku", "Leie_Rist"],
 				Leie_Rist: ["Kolga_Jaani", "Rannu_Jõesuu_sild"],
@@ -89,6 +92,15 @@
 				Kaarlijärve: ["Taru_Viljandi_Sangla_Rist", "Ervu"],
 				Ervu: ["Kaarlijärve", "Rõngu"],
 			};
+
+			//// Check bidirectional connections
+			//for (let location in seosed) {
+			//	seosed[location].forEach((connectedLocation) => {
+			//		if (!seosed[connectedLocation] || !seosed[connectedLocation].includes(location)) {
+			//			console.error(`Bidirectional connection issue between ${location} and ${connectedLocation}`);
+			//		}
+			//	});
+			//}
 
 			function algus() {
 				kaart = L.map("kaardikiht").setView([58.7, 25.59], 8);
@@ -105,7 +117,6 @@
 				}
 				for (let koht in seosed) {
 					for (let sihtkoht of seosed[koht]) {
-						console.log(koht, sihtkoht);
 						L.polyline([kohad[koht], kohad[sihtkoht]]).addTo(kaart);
 					}
 				}
@@ -116,9 +127,10 @@
 			}
 
 			let mituMarkeritVajutatud = 0;
-			let leitud, uuritud, kohaandmed;
-			let markerid = {};
-			let alguskoht, loppkoht;
+			let kohaandmed = [];
+			let alguskoht, loppkoht; // Define alguskoht and loppkoht variables
+			let kylastatud = [];
+
 			function markeriVajutus(marker) {
 				mituMarkeritVajutatud++;
 				marker.target.setStyle({ color: "red" });
@@ -131,47 +143,18 @@
 				if (mituMarkeritVajutatud === 2) {
 					loppkoht = marker.target.nimetus;
 					pealkiri.innerText = "Leian lühima tee";
-					kohaandmed = [];
 
 					for (let koht in kohad) {
-						kohaandmed[koht] = { nimetus: koht, kaugus: Infinity, tagasi: "?", kylastatud: false };
+						graaf.lisaTipp(koht);
 					}
-
-					kohaandmed[alguskoht].kaugus = 0;
-					kohaandmed[alguskoht].tagasi = ".";
-					kohaandmed[alguskoht].kylastatud = true;
-
-					setTimeout(uuri, 255);
-				}
-			}
-
-			function uuri() {
-				if (kohaandmed[loppkoht].kylastatud === false) {
-					for (let koht of kohaandmed) {
-						if (koht.kylastatud === false && !uuritud.includes(koht)) {
-							markerid[koht].setStyle({ color: "black" });
-							kohaandmed[koht].kylastatud = true;
-							kohaandmed[koht].tagasi = uuritav;
-							kohaandmed[koht].kaugus = kohad[koht].distanceTo(kohad[uuritav]);
+					for (let koht in seosed) {
+						for (let kohaSeos of seosed[koht]) {
+							graaf.lisaServ(koht, kohaSeos, kohad[koht].distanceTo(kohad[kohaSeos]) / 1000);
 						}
 					}
-
-					setTimeout(uuri, 255);
-				} else {
-					// Jõudsin lõppu, näitan teed
-					let v = "";
-					let koht = loppkoht;
-					v += koht;
-					let kokku = 0;
-
-					while (kohaandmed[koht].tagasi !== null) {
-						v += " " + kohaandmed[koht].tagasi + " " + kohaandmed[koht].kaugus;
-						kokku += kohaandmed[koht].kaugus;
-						koht = kohaandmed[koht].tagasi;
-					}
-
-					v += " kokku " + (kokku / 1000).toFixed(1) + " km.";
-					teabekiht.innerText = v;
+					graaf.dijkstra(alguskoht, loppkoht, markerid);
+					markerid[alguskoht].setStyle({ color: "green" });
+					markerid[loppkoht].setStyle({ color: "green" });
 				}
 			}
 		</script>
@@ -179,6 +162,7 @@
 	<body onload="algus()">
 		<h4 id="pealkiri">Vali alguskoht</h4>
 		<div id="sisu"></div>
+		<div id="sisu2"></div>
 		<div id="kaardikiht"></div>
 		<div id="teabekiht"></div>
 	</body>
