@@ -1,0 +1,47 @@
+% Facts: Texts and their labels
+text_label("Suured allahindlused kõikidele toodetele! Osta kohe ja säästa.", 'Reklaam').
+text_label("Unikaalsed pakkumised ainult sinule. Ära maga maha!", 'Reklaam').
+text_label("Parimad hinnad, kvaliteetsed tooted. Külasta meie e-poodi nüüd.", 'Reklaam').
+text_label("Algebra on matemaatika haru, mis tegeleb arvude ja tundmatute suhetega.", 'Matemaatika').
+text_label("Diferentsiaalvõrrandid on oluline osa matemaatika uurimisest.", 'Matemaatika').
+text_label("Geomeetria keskendub kujude ja nende omaduste uurimisele.", 'Matemaatika').
+text_label("Kuldne päike tõuseb kõrgel taevas.", 'Luuletus').
+text_label("Liginev pikne. Kõrvetab päike. Raske ja palav on õhk lõhnade magususes. Tundub kui rõhk helgetavas vagususes. Haudub äike. Pilvi tumesiniseid lõunapool pikkamisi üles ajab. Kõue kauge hääl kumedalt kusagil kajab. Tulevirav nool Kabelipalu pääl välgatab. Pimedaks tõmbavat kaugusi säraseid näen ju sinetava pilve varju all. Kõmin kui sõjahobuse tammumine üleval. On nagu asju salapäraseid teatataks pikse ligineval mürinal. Helgetav päike end pilvesse peidab. Ikka eredamalt välku heidab. Kärgatuste kurjakuulutav järskus aknaruutusid täristab. Põua pika, lämmatava ummuse käristab, latvasid längutab, lehtesid väristab tuulispääna tulevate puhangute värskus.", 'Luuletus').
+
+% Rules: Extract common words from texts
+common_words(Texts, CommonWords) :-
+    split_string(Texts, " .,!", " .,!", Words),
+    aggregate_all(count, member(W, Words), CommonWordsCount),
+    sort(0, @>=, CommonWordsCount, SortedCount),
+    length(CommonWords, 5),
+    member(Word-_, SortedCount),
+    member(Word, CommonWords).
+
+% Rules: Predict text type
+predict_text_type(Text, AdCommonWords, MathCommonWords, Type) :-
+    split_string(Text, " .,!", " .,!", Words),
+    count_words_in_list(Words, AdCommonWords, AdCount),
+    count_words_in_list(Words, MathCommonWords, MathCount),
+    (AdCount > MathCount -> Type = 'Reklaam' ; Type = 'Matemaatika').
+
+count_words_in_list([], _, 0).
+count_words_in_list([H|T], WordList, Count) :-
+    (member(H, WordList) -> Count1 is 1 ; Count1 is 0),
+    count_words_in_list(T, WordList, Count2),
+    Count is Count1 + Count2.
+
+% Example usage
+ad_texts = ["Suured allahindlused kõikidele toodetele! Osta kohe ja säästa.",
+            "Unikaalsed pakkumised ainult sinule. Ära maga maha!",
+            "Parimad hinnad, kvaliteetsed tooted. Külasta meie e-poodi nüüd."].
+math_texts = ["Algebra on matemaatika haru, mis tegeleb arvude ja tundmatute suhetega.",
+              "Diferentsiaalvõrrandid on oluline osa matemaatika uurimisest.",
+              "Geomeetria keskendub kujude ja nende omaduste uurimisele."].
+
+predict_text_type("Algebra on matemaatika haru, mis tegeleb arvude ja tundmatute suhetega.",
+                  AdCommonWords, MathCommonWords, Type),
+writeln(Type).
+
+predict_text_type("Suured allahindlused kõikidele toodetele! Osta kohe ja säästa.",
+                  AdCommonWords, MathCommonWords, Type),
+writeln(Type).
