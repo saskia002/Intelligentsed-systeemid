@@ -47,7 +47,7 @@ accuracy = accuracy_score(y_test, y_pred)
 print("Mudeli täpsus:", accuracy)
 
 # Uus tekst
-new_text = "Kevadtuuled õrnalt paitavad, lilled avanevad päikese säras."
+new_text = "veidi harjutama pean kuidas anda kinki kapi otsas küll ma tean on meil vitsakimpki"
 
 # Ennustamine
 new_text_vectorized = vectorizer.transform([new_text])
