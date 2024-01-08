@@ -4,6 +4,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.metrics import accuracy_score
 
+#scikit-learn pkg
+
 def most_common_words(texts):
     vectorizer = CountVectorizer()
     X = vectorizer.fit_transform(texts)
@@ -15,18 +17,17 @@ def predict_text_type(text, ad_words, math_words):
     math_count = sum(text.count(word) for word, _ in math_words)
     return "Reklaam" if ad_count > math_count else "Matemaatika"
 
-# Reklaamitekstid
 ad_texts = [
     "Suured allahindlused kõikidele toodetele! Osta kohe ja säästa.",
     "Unikaalsed pakkumised ainult sinule. Ära maga maha!",
     "Parimad hinnad, kvaliteetsed tooted. Külasta meie e-poodi nüüd.",
 ]
 
-# Matemaatikatekstid
 math_texts = [
     "Algebra on matemaatika haru, mis tegeleb arvude ja tundmatute suhetega.",
     "Diferentsiaalvõrrandid on oluline osa matemaatika uurimisest.",
     "Geomeetria keskendub kujude ja nende omaduste uurimisele.",
+    "Alegbra"
 ]
 
 # Levinumad sõnad
@@ -49,16 +50,8 @@ print("Uue matemaatikateksti tüüp:", prediction_math)
 
 # Luuletused
 poems = [
-    "Kuldne päike tõuseb kõrgel taevas,",
-    "Armastus õitseb nagu kevadlilled.",
-    "Öö saabub vaikselt, tähti täis taeva all,",
-    "Hing rändab unenägudes mõtterännakul.",
-    "Sügis lehvitab hüvasti, lehed langevad,",
-    "Igaviku sügavustes helisevad saladused.",
-    "Tuul sosistab puudele lugusid kaugest maailmast,",
-    "Sõnad muudavad maailma, loovad uusi reaalsusi.",
-    "Laulud kajavad mägede vahel,",
-    "Luuletused on hingepeeglid, avatud südame kaja."
+    "Liginev pikne. Kõrvetab päike. Raske ja palav on õhk lõhnade magususes. Tundub kui rõhk helgetavas vagususes. Haudub äike. Pilvi tumesiniseid lõunapool pikkamisi üles ajab. Kõue kauge hääl kumedalt kusagil kajab. Tulevirav nool Kabelipalu pääl välgatab. Pimedaks tõmbavat kaugusi säraseid näen ju sinetava pilve varju all. Kõmin kui sõjahobuse tammumine üleval. On nagu asju salapäraseid teatataks pikse ligineval mürinal. Helgetav päike end pilvesse peidab. Ikka eredamalt välku heidab. Kärgatuste kurjakuulutav järskus aknaruutusid täristab. Põua pika, lämmatava ummuse käristab, latvasid längutab, lehtesid väristab tuulispääna tulevate puhangute värskus.",
+    "Kui ma ükskord suureks saan siis kui kasvan vanaks on mul üsna kindel plaan hakkan näärivanaks"
 ]
 
 # Treenime mudeli
@@ -80,7 +73,7 @@ accuracy = accuracy_score(y_test, y_pred)
 print("Mudeli täpsus:", accuracy)
 
 # Uus tekst
-new_text = "Kevadtuuled õrnalt paitavad, lilled avanevad päikese säras."
+new_text = "veidi harjutama pean kuidas anda kinki kapi otsas küll ma tean on meil vitsakimpki"
 
 # Ennustamine
 new_text_vectorized = vectorizer.transform([new_text])

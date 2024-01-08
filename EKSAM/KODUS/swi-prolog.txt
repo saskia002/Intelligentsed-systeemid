@@ -5,7 +5,6 @@ text_label("Parimad hinnad, kvaliteetsed tooted. Külasta meie e-poodi nüüd.",
 text_label("Algebra on matemaatika haru, mis tegeleb arvude ja tundmatute suhetega.", 'Matemaatika').
 text_label("Diferentsiaalvõrrandid on oluline osa matemaatika uurimisest.", 'Matemaatika').
 text_label("Geomeetria keskendub kujude ja nende omaduste uurimisele.", 'Matemaatika').
-text_label("Kuldne päike tõuseb kõrgel taevas.", 'Luuletus').
 text_label("Liginev pikne. Kõrvetab päike. Raske ja palav on õhk lõhnade magususes. Tundub kui rõhk helgetavas vagususes. Haudub äike. Pilvi tumesiniseid lõunapool pikkamisi üles ajab. Kõue kauge hääl kumedalt kusagil kajab. Tulevirav nool Kabelipalu pääl välgatab. Pimedaks tõmbavat kaugusi säraseid näen ju sinetava pilve varju all. Kõmin kui sõjahobuse tammumine üleval. On nagu asju salapäraseid teatataks pikse ligineval mürinal. Helgetav päike end pilvesse peidab. Ikka eredamalt välku heidab. Kärgatuste kurjakuulutav järskus aknaruutusid täristab. Põua pika, lämmatava ummuse käristab, latvasid längutab, lehtesid väristab tuulispääna tulevate puhangute värskus.", 'Luuletus').
 
 % Rules: Extract common words from texts
