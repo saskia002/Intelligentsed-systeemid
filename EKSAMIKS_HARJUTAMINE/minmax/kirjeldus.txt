@@ -1,0 +1,6 @@
+Etturite male
+
+Ettur saab käia ühe käigu edasi, vastase nuppu lüüa diagonaalis ühe käigu jagu edasi. Mängijad käivad kordamööda. Võiduks loetakse, kui vastase nupud saavad otsa. Viik on juhul, kui üks pool enam käia ei saa.
+* Väljasta, kas alustav valge mängija saab teha võidukäigu
+* Väljasta, kas valgel leidub kindel võit kahe käiguga
+* Kirjelda algoritmi ja võimalikku andmete hoidmise kuju terve mängu tarbeks. Pane arvuti kasutaja vastu mängima.

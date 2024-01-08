@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<style>
+			.board {
+				display: grid;
+				grid-template-columns: repeat(8, 50px);
+				grid-template-rows: repeat(8, 50px);
+			}
+			.square {
+				width: 50px;
+				height: 50px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border: 1px solid #ccc;
+			}
+		</style>
+		<title>Etturite Male</title>
+	</head>
+	<body>
+		<div id="board" class="board"></div>
+		<div id="skoor"></div>
+
+		<script>
+			// Mängu loogika
+			const board = [
+				["", "", "", "", "", "", "", ""],
+				["b", "b", "b", "b", "b", "b", "b", "b"],
+				["", "", "", "", "", "", "", ""],
+				["", "", "", "", "", "", "", ""],
+				["", "", "", "", "", "", "", ""],
+				["", "", "", "", "", "", "", ""],
+				["w", "w", "w", "w", "w", "w", "w", "w"],
+				["", "", "", "", "", "", "", ""],
+			];
+
+			const EMPTY = "";
+			const PLAYER = "w";
+			const PC = "b";
+			const movesLeft = 4;
+			let currentPlayer = "w";
+			let skoor = [0, 0]; // [valge, must]
+
+			function drawBoard() {
+				const boardElement = document.getElementById("board");
+				boardElement.innerHTML = "";
+
+				for (let i = 0; i < board.length; i++) {
+					for (let j = 0; j < board[i].length; j++) {
+						const square = document.createElement("div");
+						square.className = "square";
+						square.innerText = board[i][j] !== "" ? board[i][j] : "";
+						square.addEventListener("click", () => handleClick(i, j));
+						boardElement.appendChild(square);
+					}
+				}
+
+				const skoorElement = document.getElementById("skoor");
+				skoorElement.innerHTML = `Valge: ${skoor[0]} | Must: ${skoor[1]}`;
+
+				if (currentPlayer === "b") {
+					setTimeout(() => {
+						makeAIMove();
+					}, 125);
+					//makeAIMove();
+				}
+			}
+
+			function makeAIMove() {
+				const availableMoves = getAvailMoves("b");
+				const bestMove = findBestMove(availableMoves, "b");
+
+				if (bestMove) {
+					movePieceBlack(bestMove.row, bestMove.col, bestMove.startRow, bestMove.startCol);
+				}
+
+				currentPlayer = "w";
+				drawBoard();
+				checkWin();
+			}
+
+			function findBestMove(availableMoves, player) {
+				let bestMove = null;
+				let bestScore = player === PC ? -Infinity : Infinity;
+
+				for (let i = 0; i < availableMoves.length; i++) {
+					const move = availableMoves[i];
+					const newBoard = board.map((row) => [...row]);
+					newBoard[move.row][move.col] = player;
+					const score = minimax(newBoard, 1, true);
+					newBoard[move.row][move.col] = EMPTY;
+
+					if ((player === PC && score > bestScore) || (player === PLAYER && score < bestScore)) {
+						bestScore = score;
+						bestMove = { row: move.row, col: move.col, startRow: move.startRow, startCol: move.startCol, score: bestScore };
+					}
+				}
+
+				return bestMove;
+			}
+
+			function minimax(board, depth, isMaximizing) {
+				const scores = {
+					[PC]: 1,
+					[PLAYER]: -1,
+					[EMPTY]: 0,
+				};
+
+				if (depth >= movesLeft || movesLeft == 0) {
+					return scores[currentPlayer] === PC ? -1 : 1;
+				}
+
+				if (isMaximizing) {
+					let bestScore = -Infinity;
+					for (let i = 0; i < 8; i++) {
+						for (let j = 0; j < 8; j++) {
+							if (board[i][j] === EMPTY) {
+								board[i][j] = PC;
+								const score = minimax(board, depth + 1, false);
+								board[i][j] = EMPTY;
+								bestScore = Math.max(score, bestScore);
+							}
+						}
+					}
+					return bestScore;
+				} else {
+					let bestScore = Infinity;
+					for (let i = 0; i < 8; i++) {
+						for (let j = 0; j < 8; j++) {
+							if (board[i][j] === EMPTY) {
+								board[i][j] = PLAYER;
+								const score = minimax(board, depth + 1, true);
+								board[i][j] = EMPTY;
+								bestScore = Math.min(score, bestScore);
+							}
+						}
+					}
+					return bestScore;
+				}
+			}
+			function getAvailMoves(player) {
+				const availableMoves = [];
+				for (let i = 0; i < board.length; i++) {
+					for (let j = 0; j < board[i].length; j++) {
+						if (player == "b") {
+							if (board[i][j] === "b") {
+								if (i + 1 >= 0 && i + 1 < board.length) {
+									// Check diagonal left
+									if (j - 1 >= 0 && j - 1 < board[i + 1].length && board[i + 1][j - 1] === "w") {
+										availableMoves.push({ row: i + 1, col: j - 1, startRow: i, startCol: j });
+									}
+									// Check diagonal right
+									if (j + 1 >= 0 && j + 1 < board[i + 1].length && board[i + 1][j + 1] === "w") {
+										availableMoves.push({ row: i + 1, col: j + 1, startRow: i, startCol: j });
+									}
+									// Check forward
+									if (board[i + 1][j] === "") {
+										availableMoves.push({ row: i + 1, col: j, startRow: i, startCol: j });
+									}
+								}
+							}
+						}
+						if (player == "w") {
+							if (board[i][j] === "w" || board[i - 1] != undefined || board[i - 1][j] != undefined || board[i + 1][j] != undefined) {
+								if (i + 1 >= 0 && i + 1 < board.length) {
+									// Check diagonal left
+									if (j - 1 >= 0 && j - 1 < board[i - 1].length && board[i - 1][j - 1] === "b") {
+										availableMoves.push({ row: i - 1, col: j - 1, startRow: i, startCol: j });
+									}
+									// Check diagonal right
+									if (j + 1 >= 0 && j + 1 < board[i - 1].length && board[i - 1][j + 1] === "b") {
+										availableMoves.push({ row: i - 1, col: j + 1, startRow: i, startCol: j });
+									}
+									// Check forward
+									if (board[i - 1][j] === "") {
+										availableMoves.push({ row: i - 1, col: j, startRow: i, startCol: j });
+									}
+								}
+							}
+						}
+					}
+				}
+
+				//console.log(availableMoves);
+				return availableMoves;
+			}
+
+			function movePieceBlack(row, col, prevRow, prevCol) {
+				board[prevRow][prevCol] = "";
+				if (board[row][col] === "w") {
+					skoor[1]++;
+				}
+				board[row][col] = "b";
+			}
+
+			function handleClick(row, col) {
+				const selectedPiece = board[row][col];
+				//console.log("Käik", row, col, selectedPiece);
+				//console.log("Käigud ", getAvailMoves(currentPlayer));
+
+				if (selectedPiece.toLowerCase() !== currentPlayer.toLowerCase()) {
+					console.log(currentPlayer, selectedPiece);
+					alert("Vali oma nupp!");
+					return;
+				}
+
+				if (board[row - 1][col - 1] === "b") {
+					board[row][col] = "";
+					board[row - 1][col - 1] = selectedPiece.toLowerCase();
+					skoor[0]++;
+					currentPlayer = currentPlayer === "w" ? "b" : "w";
+					drawBoard();
+					checkWin();
+					return;
+				}
+				if (board[row - 1][col + 1] === "b") {
+					board[row][col] = "";
+					board[row - 1][col + 1] = selectedPiece.toLowerCase();
+					skoor[0]++;
+					currentPlayer = currentPlayer === "w" ? "b" : "w";
+					drawBoard();
+					checkWin();
+					return;
+				} else {
+					if (board[row - 1][col] === "b" || board[row - 1][col] === "w") {
+						currentPlayer = "w";
+						alert("keelatud käik!");
+						return;
+					} else {
+						board[row][col] = "";
+						board[row - 1][col] = selectedPiece.toLowerCase();
+					}
+				}
+
+				currentPlayer = currentPlayer === "w" ? "b" : "w";
+				drawBoard();
+				checkWin();
+			}
+
+			function checkWin() {
+				//const playerPieces = board.flat().filter((piece) => piece === PLAYER);
+				//const pcPieces = board.flat().filter((piece) => piece === PC);
+				////if (playerPieces.length === 0) {
+				////	alert("Arvuti võitis!");
+				////	resetGame();
+				////}
+				////if (pcPieces.length === 0) {
+				////	alert("Mängija võitis!");
+				////	resetGame();
+				////}
+
+				if (getAvailMoves("w").length == 0 || getAvailMoves("b").length == 0) {
+					if (skoor[0] > skoor[1]) {
+						alert("Mängija võitis!");
+						resetGame();
+						return;
+					} else if (skoor[0] < skoor[1]) {
+						alert("Arvuti võitis!");
+						resetGame();
+						return;
+					} else {
+						alert("Viik!");
+						resetGame();
+						return;
+					}
+				}
+
+				return false;
+			}
+
+			function resetGame() {
+				currentPlayer = "w";
+				skoor = [0, 0];
+				board = [
+					["", "", "", "", "", "", "", ""],
+					["b", "b", "b", "b", "b", "b", "b", "b"],
+					["", "", "", "", "", "", "", ""],
+					["", "", "", "", "", "", "", ""],
+					["", "", "", "", "", "", "", ""],
+					["", "", "", "", "", "", "", ""],
+					["w", "w", "w", "w", "w", "w", "w", "w"],
+					["", "", "", "", "", "", "", ""],
+				];
+				drawBoard();
+			}
+
+			drawBoard();
+		</script>
+	</body>
+</html>
